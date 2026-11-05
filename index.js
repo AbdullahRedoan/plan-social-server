@@ -15,7 +15,17 @@ export async function connectToMongoDB() {
   }
 }
 
-connectToMongoDB();
+const mongoClient = await connectToMongoDB();
+
+const db = mongoClient.db("plan-social")
+const eventsCollection = db.collection("events")
+
+app.post('/add-event', async(req, res) => {
+    const data = req.body
+    const result = await eventsCollection.insertOne(data)
+    console.log(result);
+    res.send(result)
+})
 
 app.get('/', (req, res) => {
     res.send({message: `server is running fine.`})
