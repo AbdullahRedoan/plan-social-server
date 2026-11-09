@@ -94,6 +94,14 @@ afterEach(async () => {
   await eventsCollection.deleteMany({});
 });
 
+describe("GET /health", () => {
+  it("reports that the API and database are reachable", async () => {
+    const response = await request(app).get("/health").expect(200);
+
+    expect(response.body).toEqual({ status: "ok", database: "connected" });
+  });
+});
+
 describe("GET /events", () => {
   it("returns only upcoming events sorted by date", async () => {
     await seed([
