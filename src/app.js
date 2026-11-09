@@ -34,6 +34,15 @@ export function createApp({ eventsCollection, verifyToken, clientUrl } = {}) {
     res.json({ message: "PlanSocial API is running." });
   });
 
+  app.get("/health", async (req, res, next) => {
+    try {
+      await eventsCollection.estimatedDocumentCount();
+      res.json({ status: "ok", database: "connected" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.use("/events", createEventsRouter({ eventsCollection, verifyToken }));
 
   app.use((req, res) => {
