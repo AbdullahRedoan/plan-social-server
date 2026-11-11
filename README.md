@@ -65,14 +65,28 @@ npm run test:watch
 
 ## Deploying
 
+The API ships two entrypoints for the same Express app:
+
+- `src/server.js` — long-running server (`npm start`) for Render, Railway, or a
+  local machine.
+- `api/index.js` — Vercel serverless handler that reuses the app and keeps one
+  MongoDB client alive per warm lambda instance. `vercel.json` rewrites every
+  path (`/`, `/health`, `/events/*`) to it.
+
+**On Vercel:**
+
 1. Create a MongoDB Atlas cluster and a database user, then copy the connection
    string into `MONGODB_URI`.
-2. Deploy this repo to Render (or any Node host) with:
-   - Build command: `npm install`
-   - Start command: `npm start`
-   - Health check path: `/health`
-3. Set `MONGODB_URI`, `DB_NAME`, `CLIENT_URL`, and `PORT` in the host dashboard.
-4. Point the client's `NEXT_PUBLIC_API_URL` at the deployed service URL.
+2. Import this repo as a Vercel project with no framework preset. Vercel picks
+   up `vercel.json` automatically — no build command is needed.
+3. Set `MONGODB_URI`, `DB_NAME`, and `CLIENT_URL` (the client's exact origin,
+   no trailing slash) in the project's environment variables.
+4. Verify `https://<project>.vercel.app/health` returns
+   `{"status":"ok","database":"connected"}`.
+5. Point the client's `NEXT_PUBLIC_API_URL` at that URL.
+
+**On Render or another Node host:** build `npm install`, start `npm start`,
+health check path `/health`, and the same three variables plus `PORT`.
 
 Remember to update the OAuth callback URLs in Google and GitHub to the deployed
 client domain.
