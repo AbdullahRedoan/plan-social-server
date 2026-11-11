@@ -77,13 +77,18 @@ The API ships two entrypoints for the same Express app:
 
 1. Create a MongoDB Atlas cluster and a database user, then copy the connection
    string into `MONGODB_URI`.
-2. Import this repo as a Vercel project with no framework preset. Vercel picks
-   up `vercel.json` automatically — no build command is needed.
-3. Set `MONGODB_URI`, `DB_NAME`, and `CLIENT_URL` (the client's exact origin,
+2. Import this repo as a Vercel project. The build detects Express 5 and turns
+   `api/index.js` into a serverless function; `vercel.json` declares the empty
+   `dist/` folder as the static output so no repository file is ever served
+   directly — every request, including `/index.js`, is rewritten to the
+   function.
+3. Keep the project's Node.js version on 22.x or 24.x (`package.json` pins
+   `24.x`); 26.x is rejected by the build pipeline.
+4. Set `MONGODB_URI`, `DB_NAME`, and `CLIENT_URL` (the client's exact origin,
    no trailing slash) in the project's environment variables.
-4. Verify `https://<project>.vercel.app/health` returns
+5. Verify `https://<project>.vercel.app/health` returns
    `{"status":"ok","database":"connected"}`.
-5. Point the client's `NEXT_PUBLIC_API_URL` at that URL.
+6. Point the client's `NEXT_PUBLIC_API_URL` at that URL.
 
 **On Render or another Node host:** build `npm install`, start `npm start`,
 health check path `/health`, and the same three variables plus `PORT`.

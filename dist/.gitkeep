@@ -1,0 +1,3 @@
+# Kept so the `dist` directory exists in git. Vercel uses `dist` as the static
+# output (see vercel.json) so that no repository file is ever served statically;
+# every request is rewritten to the api/index.js serverless handler instead.
